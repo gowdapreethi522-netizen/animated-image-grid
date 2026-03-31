@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Animated Image Grid | Web CMS Mini Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <style>
+
+    /* ══════════════════════════════════
+       RESET & ROOT
+    ══════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #05050a;
+      --surface:  #0f0f18;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #c8ff47;
+      --pink:     #ff4fa3;
+      --blue:     #47e0ff;
+      --text:     #efefef;
+      --muted:    #525268;
+      --r:        14px;
+      --ease:     cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════════
+       BACKGROUND GLOW BLOBS
+    ══════════════════════════════════ */
+    .bg-blobs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      animation: blobDrift 12s ease-in-out infinite alternate;
+    }
+
+    .blob-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -100px; animation-delay: 0s; }
+    .blob-2 { width: 500px; height: 500px; background: var(--pink);   bottom: -150px; right: -100px; animation-delay: -4s; }
+    .blob-3 { width: 400px; height: 400px; background: var(--blue);   top: 40%; left: 40%; animation-delay: -8s; }
+
+    @keyframes blobDrift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* ══════════════════════════════════
+       NAV
+    ══════════════════════════════════ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 52px;
+      background: rgba(5,5,10,0.8);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      animation: slideDown 0.6s var(--ease) both;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 4px;
+      color: var(--accent);
+    }
+
+    .logo span { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s var(--ease);
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-pill {
+      background: var(--accent);
+      color: #000;
+      padding: 9px 24px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-decoration: none;
+      transition: box-shadow 0.3s, transform 0.2s;
+    }
+
+    .nav-pill:hover {
+      box-shadow: 0 0 32px rgba(200,255,71,0.4);
+      transform: translateY(-2px);
+    }
+
+    /* ══════════════════════════════════
+       HERO
+    ══════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 88px 24px 60px;
+      animation: fadeUp 0.8s 0.1s var(--ease) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(200,255,71,0.08);
+      border: 1px solid rgba(200,255,71,0.2);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 7px 20px;
+      border-radius: 50px;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge::before { content: '✦'; font-size: 0.7rem; }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 10vw, 9rem);
+      line-height: 0.9;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .word-2 {
+      -webkit-text-stroke: 2px var(--accent);
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 440px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    /* ══════════════════════════════════
+       STATS
+    ══════════════════════════════════ */
+    .stats {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin: 48px auto;
+      max-width: 700px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--surface);
+      animation: fadeUp 0.8s 0.25s var(--ease) both;
+    }
+
+    .stat {
+      flex: 1;
+      text-align: center;
+      padding: 28px 16px;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ══════════════════════════════════
+       CATEGORY TABS  (CSS :target trick)
+    ══════════════════════════════════ */
+    .filter-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 52px;
+      animation: fadeUp 0.8s 0.35s var(--ease) both;
+    }
+
+    .filter-bar a {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .filter-bar a:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(200,255,71,0.2);
+    }
+
+    /* ══════════════════════════════════
+       IMAGE GRID
+    ══════════════════════════════════ */
+    .grid-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+      animation: fadeUp 0.8s 0.45s var(--ease) both;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 260px;
+      gap: 14px;
+    }
+
+    /* ── Span rules for editorial layout ── */
+    .card:nth-child(1)  { grid-column: span 2; grid-row: span 2; }
+    .card:nth-child(5)  { grid-column: span 2; }
+    .card:nth-child(8)  { grid-column: span 2; grid-row: span 2; }
+    .card:nth-child(11) { grid-column: span 2; }
+
+    /* ══════════════════════════════════
+       CARD
+    ══════════════════════════════════ */
+    .card {
+      position: relative;
+      border-radius: var(--r);
+      overflow: hidden;
+      background: var(--surface);
+      /* stagger via custom property set inline */
+      animation: cardPop 0.7s var(--ease) both;
+      animation-delay: var(--d, 0s);
+    }
+
+    @keyframes cardPop {
+      from { opacity: 0; transform: scale(0.88) translateY(20px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+
+    /* Assign stagger delays without JS */
+    .card:nth-child(1)  { --d: 0.05s; }
+    .card:nth-child(2)  { --d: 0.10s; }
+    .card:nth-child(3)  { --d: 0.15s; }
+    .card:nth-child(4)  { --d: 0.20s; }
+    .card:nth-child(5)  { --d: 0.25s; }
+    .card:nth-child(6)  { --d: 0.30s; }
+    .card:nth-child(7)  { --d: 0.35s; }
+    .card:nth-child(8)  { --d: 0.40s; }
+    .card:nth-child(9)  { --d: 0.45s; }
+    .card:nth-child(10) { --d: 0.50s; }
+    .card:nth-child(11) { --d: 0.55s; }
+    .card:nth-child(12) { --d: 0.60s; }
+
+    /* ── Image zoom on hover ── */
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s var(--ease), filter 0.5s;
+      filter: saturate(0.65) brightness(0.8);
+    }
+
+    .card:hover img {
+      transform: scale(1.1);
+      filter: saturate(1.1) brightness(1.02);
+    }
+
+    /* ── Gradient overlay ── */
+    .card-info {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.88) 0%,
+        rgba(0,0,0,0.15) 45%,
+        transparent 100%
+      );
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 22px 20px;
+      opacity: 0;
+      transition: opacity 0.45s var(--ease);
+    }
+
+    .card:hover .card-info { opacity: 1; }
+
+    .card-cat {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      transform: translateY(12px);
+      transition: transform 0.45s var(--ease);
+    }
+
+    .card:hover .card-cat { transform: translateY(0); }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.55rem;
+      letter-spacing: 1.5px;
+      transform: translateY(14px);
+      transition: transform 0.45s 0.04s var(--ease);
+    }
+
+    .card:hover .card-title { transform: translateY(0); }
+
+    .card-sub {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 6px;
+      transform: translateY(16px);
+      transition: transform 0.45s 0.08s var(--ease);
+    }
+
+    .card:hover .card-sub { transform: translateY(0); }
+
+    /* ── Bottom accent line ── */
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s var(--ease);
+    }
+
+    .card:hover::after { transform: scaleX(1); }
+
+    /* Different accent colors per column */
+    .card:nth-child(3n)::after { background: var(--pink); }
+    .card:nth-child(4n)::after { background: var(--blue); }
+
+    /* ── Corner badge ── */
+    .card-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 4px 11px;
+      border-radius: 50px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.35s, transform 0.4s var(--ease);
+    }
+
+    .card:hover .card-badge { opacity: 1; transform: translateY(0); }
+
+    /* ── Shimmer on hover ── */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        115deg,
+        transparent 40%,
+        rgba(255,255,255,0.08) 50%,
+        transparent 60%
+      );
+      background-size: 200% 200%;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+      animation: shimmer 0.7s linear;
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
+    }
+
+    /* ══════════════════════════════════
+       FOOTER
+    ══════════════════════════════════ */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+
+    footer span { color: var(--accent); }
+
+    /* ══════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════ */
+    @media (max-width: 960px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .card:nth-child(1)  { grid-column: span 2; grid-row: span 1; }
+      .card:nth-child(8)  { grid-column: span 2; grid-row: span 1; }
+    }
+
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; grid-auto-rows: 220px; }
+      .card:nth-child(n) { grid-column: span 1 !important; grid-row: span 1 !important; }
+      .hero h1 { font-size: 3.5rem; }
+      .stats { flex-wrap: wrap; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- Background blobs -->
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="logo">GRID<span>VAULT</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Gallery</a></li>
+    <li><a href="#">Collections</a></li>
+    <li><a href="#">Explore</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <a href="#" class="nav-pill">Upload +</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">Web CMS · Mini Project</div>
+  <h1>ANIMATED<br><span class="word-2">IMAGE GRID</span></h1>
+  <p>Hover over any image to reveal details. A fully animated gallery built with pure HTML &amp; CSS.</p>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats">
+  <div class="stat"><span class="stat-num">240+</span><span class="stat-label">Images</span></div>
+  <div class="stat"><span class="stat-num">12</span><span class="stat-label">Categories</span></div>
+  <div class="stat"><span class="stat-num">48K</span><span class="stat-label">Views</span></div>
+  <div class="stat"><span class="stat-num">4.9 ★</span><span class="stat-label">Rating</span></div>
+</div>
+
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar">
+  <a href="#">All</a>
+  <a href="#">Nature</a>
+  <a href="#">Urban</a>
+  <a href="#">Abstract</a>
+  <a href="#">Portrait</a>
+  <a href="#">Travel</a>
+</div>
+
+<!-- ── GRID ── -->
+<div class="grid-wrap">
+  <div class="grid">
+
+    <!-- Card 1 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=80" alt="Northern Lights"/>
+      <span class="card-badge" style="color:var(--blue)">Nature</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--blue)">Nature</span>
+        <div class="card-title">Northern Lights</div>
+        <div class="card-sub">Iceland &nbsp;·&nbsp; Aurora Borealis</div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80" alt="Tokyo Night"/>
+      <span class="card-badge" style="color:var(--accent)">Urban</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--accent)">Urban</span>
+        <div class="card-title">City Pulse</div>
+        <div class="card-sub">Tokyo &nbsp;·&nbsp; Night Life</div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=600&q=80" alt="Abstract"/>
+      <span class="card-badge" style="color:var(--pink)">Abstract</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--pink)">Abstract</span>
+        <div class="card-title">Liquid Form</div>
+        <div class="card-sub">Abstract &nbsp;·&nbsp; Motion</div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&q=80" alt="Santorini"/>
+      <span class="card-badge" style="color:var(--blue)">Travel</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--blue)">Travel</span>
+        <div class="card-title">Santorini Blue</div>
+        <div class="card-sub">Greece &nbsp;·&nbsp; Aegean Sea</div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80" alt="Desert"/>
+      <span class="card-badge" style="color:var(--accent)">Nature</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--accent)">Nature</span>
+        <div class="card-title">Desert Gold</div>
+        <div class="card-sub">Sahara &nbsp;·&nbsp; Golden Dunes</div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80" alt="Portrait"/>
+      <span class="card-badge" style="color:var(--pink)">Portrait</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--pink)">Portrait</span>
+        <div class="card-title">Golden Hour</div>
+        <div class="card-sub">Studio &nbsp;·&nbsp; Warm Light</div>
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" alt="Architecture"/>
+      <span class="card-badge" style="color:var(--accent)">Urban</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--accent)">Urban</span>
+        <div class="card-title">Steel Frame</div>
+        <div class="card-sub">Architecture &nbsp;·&nbsp; Geometric</div>
+      </div>
+    </div>
+
+    <!-- Card 8 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80" alt="Forest"/>
+      <span class="card-badge" style="color:var(--blue)">Nature</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--blue)">Nature</span>
+        <div class="card-title">Forest Fog</div>
+        <div class="card-sub">Woodland &nbsp;·&nbsp; Morning Mist</div>
+      </div>
+    </div>
+
+    <!-- Card 9 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Neon"/>
+      <span class="card-badge" style="color:var(--pink)">Abstract</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--pink)">Abstract</span>
+        <div class="card-title">Neon Dreams</div>
+        <div class="card-sub">Abstract &nbsp;·&nbsp; Neon Glow</div>
+      </div>
+    </div>
+
+    <!-- Card 10 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80" alt="Mountains"/>
+      <span class="card-badge" style="color:var(--blue)">Travel</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--blue)">Travel</span>
+        <div class="card-title">Mountain Rise</div>
+        <div class="card-sub">Alps &nbsp;·&nbsp; Summit View</div>
+      </div>
+    </div>
+
+    <!-- Card 11 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" alt="Portrait"/>
+      <span class="card-badge" style="color:var(--pink)">Portrait</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--pink)">Portrait</span>
+        <div class="card-title">Deep Gaze</div>
+        <div class="card-sub">Mono &nbsp;·&nbsp; Editorial</div>
+      </div>
+    </div>
+
+    <!-- Card 12 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=600&q=80" alt="Rain Street"/>
+      <span class="card-badge" style="color:var(--accent)">Urban</span>
+      <div class="card-info">
+        <span class="card-cat" style="color:var(--accent)">Urban</span>
+        <div class="card-title">Rain Reflection</div>
+        <div class="card-sub">Street &nbsp;·&nbsp; Rainy Night</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  Made with <span>HTML &amp; CSS only</span> &nbsp;·&nbsp; Web Content Management System &nbsp;·&nbsp; Mini Project
+</footer>
+
+</body>
+</html>
